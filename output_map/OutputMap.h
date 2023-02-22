@@ -8,12 +8,12 @@
 
 class OutputMap {
 public:
-    OutputMap(int P, int Q);
+    OutputMap(int K, int P, int Q);
 
     void Print();
 
-    int P, Q;
-    long long ** OutputArray;
+    int K, P, Q;
+    long long *** OutputArray;
 };
 
 

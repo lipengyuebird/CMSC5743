@@ -8,7 +8,7 @@
 class Kernel {
 public:
     virtual void PrintArray() = 0;
-    int C, R, S;
+    int K, C, R, S;
 };
 
 

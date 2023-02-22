@@ -53,16 +53,20 @@ void Direct_FeatureMap::RandInit() {
 }
 
 OutputMap *Direct_FeatureMap::conv(Direct_Kernel * C_K) {
+    int K = C_K->K;
     int P = H - C_K->R + 1;
     int Q = W - C_K->S + 1;
-    OutputMap * O_M = new OutputMap(P, Q);
-    for (int c = 0; c < C; ++c) {
-        int n = c;
-        for (int h_s = 0; h_s < P; ++h_s) {
-            for (int w_s = 0; w_s < Q; ++w_s) {
-                for (int r = 0; r < C_K->R; ++r) {
-                    for (int s = 0; s < C_K->R; ++s) {
-                        O_M->OutputArray[h_s][w_s] += FeatureMapArray[c][h_s + r][w_s + s] * C_K->KernelArray[n][r][s];
+    OutputMap * O_M = new OutputMap(K, P, Q);
+    for (int k = 0; k < K; ++k) {
+        for (int c = 0; c < C; ++c) {
+            int n = c;
+            for (int h_s = 0; h_s < P; ++h_s) {
+                for (int w_s = 0; w_s < Q; ++w_s) {
+                    for (int r = 0; r < C_K->R; ++r) {
+                        for (int s = 0; s < C_K->R; ++s) {
+                            O_M->OutputArray[k][h_s][w_s] +=
+                                    FeatureMapArray[c][h_s + r][w_s + s] * C_K->KernelArray[k][n][r][s];
+                        }
                     }
                 }
             }

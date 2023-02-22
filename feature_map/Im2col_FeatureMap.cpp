@@ -78,12 +78,15 @@ OutputMap *Im2col_FeatureMap::conv(Im2col_Kernel * Im2_K) {
 
 OutputMap *Im2col_FeatureMap::conv(Im2col_Kernel *Im2_K, bool Winograd) {
     assert(C == Im2_K->C);
-    OutputMap * O_M = new OutputMap(P, Q);
+    int K = Im2_K->K;
+    OutputMap * O_M = new OutputMap(K, P, Q);
     if (!Winograd) {
-        for (int h_s = 0; h_s < P; ++h_s) {
-            for (int w_s = 0; w_s < Q; ++w_s) {
-                for (int i = 0; i < C * R * S; ++i) {
-                    O_M->OutputArray[h_s][w_s] += this->FeatureMapArray[Q * h_s + w_s][i] * Im2_K->KernelArray[i];
+        for (int k = 0; k < K; ++k) {
+            for (int h_s = 0; h_s < P; ++h_s) {
+                for (int w_s = 0; w_s < Q; ++w_s) {
+                    for (int i = 0; i < C * R * S; ++i) {
+                        O_M->OutputArray[k][h_s][w_s] += this->FeatureMapArray[Q * h_s + w_s][i] * Im2_K->KernelArray[k][i];
+                    }
                 }
             }
         }

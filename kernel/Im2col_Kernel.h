@@ -11,13 +11,13 @@
 
 class Im2col_Kernel: public Kernel{
 public:
-    Im2col_Kernel(int C, int R, int S);
+    Im2col_Kernel(int K, int C, int R, int S);
     Im2col_Kernel static * FromCanonical(Direct_Kernel * C_K);
 
     void RandInit();
     void PrintArray() override;
 
-    long * KernelArray;
+    long ** KernelArray;
 
 };
 
