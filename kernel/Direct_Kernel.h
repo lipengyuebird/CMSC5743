@@ -12,10 +12,10 @@ class Direct_Kernel: public Kernel{
 public:
     Direct_Kernel(int K, int C, int R, int S);
     ~Direct_Kernel();
-    void RandInit();
-    void PrintArray() override;
+    void randInit();
+    void printArray() override;
 
-    long **** KernelArray;
+    long **** kernelArray;
 };
 
 

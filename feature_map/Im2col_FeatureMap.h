@@ -9,21 +9,26 @@
 #include "FeatureMap.h"
 #include "Direct_FeatureMap.h"
 #include "../kernel/Im2col_Kernel.h"
+#include "../acc_function/AcceleratorFunction.h"
+#include "../acc_function/winograd/WinogradFunction_1D.h"
 
 class Im2col_FeatureMap: public FeatureMap{
 public:
     Im2col_FeatureMap(int C, int H, int W, int R, int S);
     ~Im2col_FeatureMap();
-    Im2col_FeatureMap static * FromCanonical(Direct_FeatureMap * C_FM, int R, int S);
+    Im2col_FeatureMap static * fromCanonical(Direct_FeatureMap * direct_featureMap, int R, int S);
 
-    void RandInit();
-    void PrintArray() override;
+    void randInit();
+    void printArray() override;
 
-    OutputMap * conv(Im2col_Kernel * Im2_K);
-    OutputMap * conv(Im2col_Kernel * Im2_K, bool Winograd);
+    OutputMap * conv(Im2col_Kernel * im2_kernel);
+    OutputMap * conv(Im2col_Kernel * im2_kernel, AcceleratorFunction * accFunction);
 
     int R, S, P, Q;
-    long ** FeatureMapArray;
+    long ** featureMapArray;
+private:
+    OutputMap * conv_winograd_1D(Im2col_Kernel * im2_kernel, WinogradFunction_1D * func);
+
 };
 
 

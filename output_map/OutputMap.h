@@ -10,10 +10,10 @@ class OutputMap {
 public:
     OutputMap(int K, int P, int Q);
 
-    void Print();
+    void print();
 
     int K, P, Q;
-    long long *** OutputArray;
+    long long *** outputArray;
 };
 
 

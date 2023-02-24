@@ -12,12 +12,12 @@
 class Im2col_Kernel: public Kernel{
 public:
     Im2col_Kernel(int K, int C, int R, int S);
-    Im2col_Kernel static * FromCanonical(Direct_Kernel * C_K);
+    Im2col_Kernel static * fromCanonical(Direct_Kernel * kernel);
 
-    void RandInit();
-    void PrintArray() override;
+    void randInit();
+    void printArray() override;
 
-    long ** KernelArray;
+    long ** kernelArray;
 
 };
 

@@ -7,7 +7,7 @@
 
 class FeatureMap {
 public:
-    virtual void PrintArray() = 0;
+    virtual void printArray() = 0;
     int C, H, W;
 };
 

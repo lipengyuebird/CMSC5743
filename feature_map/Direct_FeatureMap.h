@@ -17,12 +17,12 @@ public:
     Direct_FeatureMap(int C, int H, int W);
     ~Direct_FeatureMap();
 
-    void RandInit();
-    void PrintArray() override;
+    void randInit();
+    void printArray() override;
 
-    OutputMap * conv(Direct_Kernel * C_K);
+    OutputMap * conv(Direct_Kernel * directKernel);
 
-    long *** FeatureMapArray;
+    long *** featureMapArray;
 };
 
 

@@ -7,7 +7,7 @@
 
 class Kernel {
 public:
-    virtual void PrintArray() = 0;
+    virtual void printArray() = 0;
     int K, C, R, S;
 };
 
