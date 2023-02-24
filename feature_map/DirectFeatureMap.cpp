@@ -2,12 +2,12 @@
 // Created by perye on 2/4/23.
 //
 
-#include "Direct_FeatureMap.h"
+#include "DirectFeatureMap.h"
 
 #include <iostream>
 #include <iomanip>
 
-Direct_FeatureMap::Direct_FeatureMap(int C, int H, int W) {
+DirectFeatureMap::DirectFeatureMap(int C, int H, int W) {
     this->C = C, this->H = H, this->W = W;
     this->featureMapArray = new long ** [C];
     for (int c = 0; c < C; ++c) {
@@ -18,7 +18,7 @@ Direct_FeatureMap::Direct_FeatureMap(int C, int H, int W) {
     }
 }
 
-Direct_FeatureMap::~Direct_FeatureMap() {
+DirectFeatureMap::~DirectFeatureMap() {
     for (int c = 0; c < C; ++c) {
         for (int h = 0; h < H; ++h) {
             delete [] this->featureMapArray[c][h];
@@ -28,7 +28,7 @@ Direct_FeatureMap::~Direct_FeatureMap() {
     delete this->featureMapArray;
 }
 
-void Direct_FeatureMap::printArray() {
+void DirectFeatureMap::printArray() {
 
     for (int i = 0; i < C; ++i) {
         for (int j = 0; j < H; ++j) {
@@ -42,7 +42,7 @@ void Direct_FeatureMap::printArray() {
     std::cout << std::endl;
 }
 
-void Direct_FeatureMap::randInit() {
+void DirectFeatureMap::randInit() {
     for (int c = 0; c < C; ++c) {
         for (int h = 0; h < H; ++h) {
             for (int w = 0; w < W; ++w) {
@@ -52,11 +52,11 @@ void Direct_FeatureMap::randInit() {
     }
 }
 
-OutputMap *Direct_FeatureMap::conv(Direct_Kernel * directKernel) {
+OutputMap *DirectFeatureMap::conv(DirectKernel * directKernel) {
     int K = directKernel->K;
     int P = H - directKernel->R + 1;
     int Q = W - directKernel->S + 1;
-    OutputMap * O_M = new OutputMap(K, P, Q);
+    OutputMap * outputMap = new OutputMap(K, P, Q);
     for (int k = 0; k < K; ++k) {
         for (int c = 0; c < C; ++c) {
             int n = c;
@@ -64,7 +64,7 @@ OutputMap *Direct_FeatureMap::conv(Direct_Kernel * directKernel) {
                 for (int w_s = 0; w_s < Q; ++w_s) {
                     for (int r = 0; r < directKernel->R; ++r) {
                         for (int s = 0; s < directKernel->R; ++s) {
-                            O_M->outputArray[k][h_s][w_s] +=
+                            outputMap->outputArray[k][h_s][w_s] +=
                                     featureMapArray[c][h_s + r][w_s + s] * directKernel->kernelArray[k][n][r][s];
                         }
                     }
@@ -72,5 +72,5 @@ OutputMap *Direct_FeatureMap::conv(Direct_Kernel * directKernel) {
             }
         }
     }
-    return O_M;
+    return outputMap;
 }

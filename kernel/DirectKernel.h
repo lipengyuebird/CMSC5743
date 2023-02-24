@@ -8,10 +8,10 @@
 
 #include "Kernel.h"
 
-class Direct_Kernel: public Kernel{
+class DirectKernel: public Kernel{
 public:
-    Direct_Kernel(int K, int C, int R, int S);
-    ~Direct_Kernel();
+    DirectKernel(int K, int C, int R, int S);
+    ~DirectKernel();
     void randInit();
     void printArray() override;
 

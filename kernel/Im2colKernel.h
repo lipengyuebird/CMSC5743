@@ -7,12 +7,12 @@
 
 
 #include "Kernel.h"
-#include "Direct_Kernel.h"
+#include "DirectKernel.h"
 
-class Im2col_Kernel: public Kernel{
+class Im2colKernel: public Kernel{
 public:
-    Im2col_Kernel(int K, int C, int R, int S);
-    Im2col_Kernel static * fromCanonical(Direct_Kernel * kernel);
+    Im2colKernel(int K, int C, int R, int S);
+    Im2colKernel static * fromCanonical(DirectKernel * kernel);
 
     void randInit();
     void printArray() override;

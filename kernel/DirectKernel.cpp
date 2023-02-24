@@ -2,12 +2,12 @@
 // Created by perye on 2/4/23.
 //
 
-#include "Direct_Kernel.h"
+#include "DirectKernel.h"
 
 #include <iostream>
 #include <iomanip>
 
-Direct_Kernel::Direct_Kernel(int K, int C, int R, int S) {
+DirectKernel::DirectKernel(int K, int C, int R, int S) {
     this->K = K, this->C = C, this->R = R, this->S = S;
     this->kernelArray = new long *** [K];
     for (int k = 0; k < K; ++k) {
@@ -21,7 +21,7 @@ Direct_Kernel::Direct_Kernel(int K, int C, int R, int S) {
     }
 }
 
-Direct_Kernel::~Direct_Kernel() {
+DirectKernel::~DirectKernel() {
     for (int k = 0; k < K; ++k) {
         for (int c = 0; c < C; ++c) {
             for (int r = 0; r < R; ++r) {
@@ -34,7 +34,7 @@ Direct_Kernel::~Direct_Kernel() {
     delete kernelArray;
 }
 
-void Direct_Kernel::printArray() {
+void DirectKernel::printArray() {
     for (int k = 0; k < K; ++k) {
         for (int c = 0; c < C; ++c) {
             for (int r = 0; r < R; ++r) {
@@ -50,7 +50,7 @@ void Direct_Kernel::printArray() {
     std::cout << std::endl;
 }
 
-void Direct_Kernel::randInit() {
+void DirectKernel::randInit() {
     for (int k = 0; k < K; ++k) {
         for (int c = 0; c < C; ++c) {
             for (int r = 0; r < R; ++r) {

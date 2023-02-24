@@ -2,7 +2,7 @@
 // Created by perye on 2/4/23.
 //
 
-#include "Im2col_FeatureMap.h"
+#include "Im2colFeatureMap.h"
 #include "../acc_function/winograd/WinogradFunction.h"
 #include "../acc_function/winograd/WinogradFunction_1D.h"
 
@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <cassert>
 
-Im2col_FeatureMap::Im2col_FeatureMap(int C, int H, int W, int R, int S) {
+Im2colFeatureMap::Im2colFeatureMap(int C, int H, int W, int R, int S) {
     this->C = C, this->H = H, this->W = W, this->R = R, this->S = S;
     this->P = H - R + 1;
     this->Q = W - S + 1;
@@ -20,15 +20,15 @@ Im2col_FeatureMap::Im2col_FeatureMap(int C, int H, int W, int R, int S) {
     }
 }
 
-Im2col_FeatureMap::~Im2col_FeatureMap() {
+Im2colFeatureMap::~Im2colFeatureMap() {
     for (int c = 0; c < C; ++c) {
         delete [] this->featureMapArray[c];
     }
     delete this->featureMapArray;
 }
 
-void Im2col_FeatureMap::randInit() {
-    Direct_FeatureMap * C_FM = new Direct_FeatureMap(C, H, W);
+void Im2colFeatureMap::randInit() {
+    DirectFeatureMap * C_FM = new DirectFeatureMap(C, H, W);
     C_FM->randInit();
     for (int c = 0; c < C; ++c) {
         for (int h_s = 0; h_s < P; ++h_s) {
@@ -44,7 +44,7 @@ void Im2col_FeatureMap::randInit() {
     }
 }
 
-void Im2col_FeatureMap::printArray() {
+void Im2colFeatureMap::printArray() {
     for (int j = 0; j < P * Q; ++j) {
         for (int k = 0; k < C * R * S; ++k) {
             std::cout << std::setw(12) << featureMapArray[j][k] << " ";
@@ -54,36 +54,36 @@ void Im2col_FeatureMap::printArray() {
     std::cout << std::endl;
 }
 
-Im2col_FeatureMap * Im2col_FeatureMap::fromCanonical(Direct_FeatureMap * direct_featureMap, int R, int S) {
-    assert(R <= direct_featureMap->H); assert(S <= direct_featureMap->W);
-    int C = direct_featureMap->C, H = direct_featureMap->H, W = direct_featureMap->W;
+Im2colFeatureMap * Im2colFeatureMap::fromCanonical(DirectFeatureMap * directFeatureMap, int R, int S) {
+    assert(R <= directFeatureMap->H); assert(S <= directFeatureMap->W);
+    int C = directFeatureMap->C, H = directFeatureMap->H, W = directFeatureMap->W;
     int P = H - R + 1;
     int Q = W - S + 1;
-    Im2col_FeatureMap * Im2_FM = new Im2col_FeatureMap(C, H, W, R, S);
+    Im2colFeatureMap * im2_featureMap = new Im2colFeatureMap(C, H, W, R, S);
     for (int c = 0; c < C; ++c) {
         for (int h_s = 0; h_s < P; ++h_s) {
             for (int w_s = 0; w_s < Q; ++w_s) {
                 for (int r = 0; r < R; ++r) {
                     for (int s = 0; s < S; ++s) {
-                        Im2_FM->featureMapArray[Q * h_s + w_s][R * S * c + S * r + s] =
-                                direct_featureMap->featureMapArray[c][h_s + r][w_s + s];
+                        im2_featureMap->featureMapArray[Q * h_s + w_s][R * S * c + S * r + s] =
+                                directFeatureMap->featureMapArray[c][h_s + r][w_s + s];
                     }
                 }
             }
         }
     }
-    return Im2_FM;
+    return im2_featureMap;
 }
 
-OutputMap *Im2col_FeatureMap::conv(Im2col_Kernel * im2_kernel) {
-    int K = im2_kernel->K;
+OutputMap *Im2colFeatureMap::conv(Im2colKernel * im2Kernel) {
+    int K = im2Kernel->K;
     OutputMap * outputMap = new OutputMap(K, P, Q);
     for (int k = 0; k < K; ++k) {
         for (int h_s = 0; h_s < P; ++h_s) {
             for (int w_s = 0; w_s < Q; ++w_s) {
                 for (int i = 0; i < C * R * S; ++i) {
                     outputMap->outputArray[k][h_s][w_s] +=
-                            this->featureMapArray[Q * h_s + w_s][i] * im2_kernel->kernelArray[k][i];
+                            this->featureMapArray[Q * h_s + w_s][i] * im2Kernel->kernelArray[k][i];
                 }
             }
         }
@@ -91,23 +91,23 @@ OutputMap *Im2col_FeatureMap::conv(Im2col_Kernel * im2_kernel) {
     return outputMap;
 }
 
-OutputMap *Im2col_FeatureMap::conv(Im2col_Kernel *im2_kernel, AcceleratorFunction * accFunction) {
-    assert(C == im2_kernel->C);
+OutputMap *Im2colFeatureMap::conv(Im2colKernel *im2Kernel, AcceleratorFunction * accFunction) {
+    assert(C == im2Kernel->C);
     if (nullptr == accFunction) {
-        return conv(im2_kernel);
+        return conv(im2Kernel);
     } else if (auto * func = dynamic_cast<WinogradFunction_1D*>(accFunction)) {
-        return conv_winograd_1D(im2_kernel, func);
+        return conv_winograd_1D(im2Kernel, func);
     }
-    return conv(im2_kernel);
+    return conv(im2Kernel);
 }
 
-OutputMap *Im2col_FeatureMap::conv_winograd_1D(Im2col_Kernel *im2_kernel, WinogradFunction_1D *func) {
-    int K = im2_kernel->K;
+OutputMap *Im2colFeatureMap::conv_winograd_1D(Im2colKernel *im2Kernel, WinogradFunction_1D *func) {
+    int K = im2Kernel->K;
     if (func->getR() != R) {
         std::cerr << "Will not use specified Winograd function as its size does not match your kernel. " <<
         "Winograd: F(" << func->getM() << ", " << func->getR() << "). " <<
         "Kernel size: " << K << " * " << R << " * "  << S << ',' << std::endl;
-        return conv(im2_kernel);
+        return conv(im2Kernel);
     }
     OutputMap * outputMap = new OutputMap(K, P, Q);
     for (int k = 0; k < K; ++k) {
@@ -123,14 +123,14 @@ OutputMap *Im2col_FeatureMap::conv_winograd_1D(Im2col_Kernel *im2_kernel, Winogr
                         &(outputMap->outputArray[k][outputRowIdx1][outputColIdx1]),
                         &(outputMap->outputArray[k][outputRowIdx2][outputColIdx2])
                 };
-                (*func)(this->featureMapArray, im2_kernel->kernelArray[k],
+                (*func)(this->featureMapArray, im2Kernel->kernelArray[k],
                         row, col, outputPtrArray);
             }
             for (; col < C * R * S; ++col) {
                 outputMap->outputArray[k][outputRowIdx1][outputColIdx1] +=
-                        this->featureMapArray[row][col] * im2_kernel->kernelArray[k][col];
+                        this->featureMapArray[row][col] * im2Kernel->kernelArray[k][col];
                 outputMap->outputArray[k][outputRowIdx2][outputColIdx2] +=
-                        this->featureMapArray[row + 1][col] * im2_kernel->kernelArray[k][col];
+                        this->featureMapArray[row + 1][col] * im2Kernel->kernelArray[k][col];
             }
         }
         for (; row < P * Q; ++row) {
@@ -138,7 +138,7 @@ OutputMap *Im2col_FeatureMap::conv_winograd_1D(Im2col_Kernel *im2_kernel, Winogr
             int outputColIdx = row - P * outputRowIdx;
             for (int col = 0; col < C * R * S; ++col) {
                 outputMap->outputArray[k][outputRowIdx][outputColIdx] +=
-                        this->featureMapArray[row][col] * im2_kernel->kernelArray[k][col];
+                        this->featureMapArray[row][col] * im2Kernel->kernelArray[k][col];
             }
         }
     }

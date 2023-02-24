@@ -8,19 +8,19 @@
 
 #include "FeatureMap.h"
 #include "../output_map/OutputMap.h"
-#include "../kernel/Direct_Kernel.h"
+#include "../kernel/DirectKernel.h"
 
 
-class Direct_FeatureMap: public FeatureMap {
+class DirectFeatureMap: public FeatureMap {
 public:
 
-    Direct_FeatureMap(int C, int H, int W);
-    ~Direct_FeatureMap();
+    DirectFeatureMap(int C, int H, int W);
+    ~DirectFeatureMap();
 
     void randInit();
     void printArray() override;
 
-    OutputMap * conv(Direct_Kernel * directKernel);
+    OutputMap * conv(DirectKernel * directKernel);
 
     long *** featureMapArray;
 };

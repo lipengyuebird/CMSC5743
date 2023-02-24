@@ -2,12 +2,12 @@
 // Created by perye on 2/4/23.
 //
 
-#include "Im2col_Kernel.h"
+#include "Im2colKernel.h"
 
 #include <iostream>
 #include <iomanip>
 
-Im2col_Kernel::Im2col_Kernel(int K, int C, int R, int S) {
+Im2colKernel::Im2colKernel(int K, int C, int R, int S) {
     this->K = K, this->C = C, this->R = R, this->S = S;
     this->kernelArray = new long * [K];
     for (int k = 0; k < K; ++k) {
@@ -16,8 +16,8 @@ Im2col_Kernel::Im2col_Kernel(int K, int C, int R, int S) {
 
 }
 
-Im2col_Kernel * Im2col_Kernel::fromCanonical(Direct_Kernel * kernel) {
-    Im2col_Kernel * im2_kernel = new Im2col_Kernel(kernel->K, kernel->C, kernel->R, kernel->S);
+Im2colKernel * Im2colKernel::fromCanonical(DirectKernel * kernel) {
+    Im2colKernel * im2_kernel = new Im2colKernel(kernel->K, kernel->C, kernel->R, kernel->S);
     for (int k = 0; k < kernel->K; ++k) {
         for (int c = 0; c < kernel->C; ++c) {
             for (int r = 0; r < kernel->R; ++r) {
@@ -30,7 +30,7 @@ Im2col_Kernel * Im2col_Kernel::fromCanonical(Direct_Kernel * kernel) {
     return im2_kernel;
 }
 
-void Im2col_Kernel::printArray() {
+void Im2colKernel::printArray() {
     for (int k = 0; k < K; ++k) {
         for (int i = 0; i < C * R * S; ++i) {
             std::cout << std::setw(12) << kernelArray[k][i] << " ";
@@ -40,7 +40,7 @@ void Im2col_Kernel::printArray() {
     std::cout << std::endl << std::endl;
 }
 
-void Im2col_Kernel::randInit() {
+void Im2colKernel::randInit() {
     for (int k = 0; k < K; ++k) {
         for (int i = 0; i < R * S; ++i) {
             kernelArray[k][i] = rand() >> 6;

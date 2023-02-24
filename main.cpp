@@ -1,20 +1,14 @@
 #include <iostream>
 
 
-#include "feature_map/Direct_FeatureMap.h"
-#include "feature_map/Im2col_FeatureMap.h"
+#include "feature_map/DirectFeatureMap.h"
+#include "feature_map/Im2colFeatureMap.h"
 #include "util/GetTime.h"
 #include "acc_function/winograd/WinogradFunction_1D.h"
 
 
 int main() {
 
-//    const int C = 3, H = 4, W = 4;
-//    const int K = 3, R = 3, S = 3;
-
-    // Under the settings below:
-    // 1. Im2col approach does not show much difference compared to canonical one
-    // 2. OpenMP and SIMD support greatly enhance the performance
     const int C = 3, H = 56, W = 56;
     const int K = 64, R = 3, S = 3;
 
@@ -22,31 +16,31 @@ int main() {
     const bool SHOW_OUTPUT = false;
 
     // Canonical feature map
-    auto * C_Map = new Direct_FeatureMap(C, H, W);
-    C_Map->randInit();
-    if (SHOW_OUTPUT) C_Map->printArray();
+    auto * directFeatureMap = new DirectFeatureMap(C, H, W);
+    directFeatureMap->randInit();
+    if (SHOW_OUTPUT) directFeatureMap->printArray();
 
     // Im2col feature map
-    auto * Im2_Map = Im2col_FeatureMap::fromCanonical(C_Map, R, S);
-    if (SHOW_OUTPUT) Im2_Map->printArray();
+    auto * im2FeatureMap = Im2colFeatureMap::fromCanonical(directFeatureMap, R, S);
+    if (SHOW_OUTPUT) im2FeatureMap->printArray();
 
 
 
     // Canonical kernel
-    auto * C_Kernel = new Direct_Kernel(K, C, R, S);
-    C_Kernel->randInit();
-    if (SHOW_OUTPUT) C_Kernel->printArray();
+    auto * directKernel = new DirectKernel(K, C, R, S);
+    directKernel->randInit();
+    if (SHOW_OUTPUT) directKernel->printArray();
 
     // Im2col kernel
-    auto * Im2_Kernel = Im2col_Kernel::fromCanonical(C_Kernel);
-    if (SHOW_OUTPUT) Im2_Kernel->printArray();
+    auto * im2Kernel = Im2colKernel::fromCanonical(directKernel);
+    if (SHOW_OUTPUT) im2Kernel->printArray();
 
     double t0 = getTime();
-    OutputMap * O_Map1 = C_Map->conv(C_Kernel);
+    OutputMap * O_Map1 = directFeatureMap->conv(directKernel);
     double t1 = getTime();
-    OutputMap * O_Map2 = Im2_Map->conv(Im2_Kernel);
+    OutputMap * O_Map2 = im2FeatureMap->conv(im2Kernel);
     double t2 = getTime();
-    OutputMap * O_Map3 = Im2_Map->conv(Im2_Kernel, new WinogradFunction_1D(2, 3));
+    OutputMap * O_Map3 = im2FeatureMap->conv(im2Kernel, new WinogradFunction_1D(2, 3));
     double t3 = getTime();
 
 
