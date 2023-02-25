@@ -2,7 +2,7 @@
 // Created by perye on 2/4/23.
 //
 
-#include "Im2colFeatureMap.h"
+#include "Im2colFeatureMap_OMP.h"
 #include "../acc_function/winograd/WinogradFunction.h"
 #include "../acc_function/winograd/WinogradFunction_1D.h"
 
@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <cassert>
 
-Im2colFeatureMap::Im2colFeatureMap(int C, int H, int W, int R, int S) {
+Im2colFeatureMap_OMP::Im2colFeatureMap_OMP(int C, int H, int W, int R, int S) {
     this->C = C, this->H = H, this->W = W, this->R = R, this->S = S;
     this->P = H - R + 1;
     this->Q = W - S + 1;
@@ -20,14 +20,14 @@ Im2colFeatureMap::Im2colFeatureMap(int C, int H, int W, int R, int S) {
     }
 }
 
-Im2colFeatureMap::~Im2colFeatureMap() {
+Im2colFeatureMap_OMP::~Im2colFeatureMap_OMP() {
     for (int c = 0; c < C; ++c) {
         delete [] this->featureMapArray[c];
     }
     delete this->featureMapArray;
 }
 
-void Im2colFeatureMap::randInit() {
+void Im2colFeatureMap_OMP::randInit() {
     DirectFeatureMap * C_FM = new DirectFeatureMap(C, H, W);
     C_FM->randInit();
     for (int c = 0; c < C; ++c) {
@@ -44,7 +44,7 @@ void Im2colFeatureMap::randInit() {
     }
 }
 
-void Im2colFeatureMap::printArray() {
+void Im2colFeatureMap_OMP::printArray() {
     for (int j = 0; j < P * Q; ++j) {
         for (int k = 0; k < C * R * S; ++k) {
             std::cout << std::setw(12) << featureMapArray[j][k] << " ";
@@ -54,12 +54,12 @@ void Im2colFeatureMap::printArray() {
     std::cout << std::endl;
 }
 
-Im2colFeatureMap * Im2colFeatureMap::fromCanonical(DirectFeatureMap * directFeatureMap, int R, int S) {
+Im2colFeatureMap_OMP * Im2colFeatureMap_OMP::fromCanonical(DirectFeatureMap * directFeatureMap, int R, int S) {
     assert(R <= directFeatureMap->H); assert(S <= directFeatureMap->W);
     int C = directFeatureMap->C, H = directFeatureMap->H, W = directFeatureMap->W;
     int P = H - R + 1;
     int Q = W - S + 1;
-    Im2colFeatureMap * im2_featureMap = new Im2colFeatureMap(C, H, W, R, S);
+    Im2colFeatureMap_OMP * im2_featureMap = new Im2colFeatureMap_OMP(C, H, W, R, S);
     for (int c = 0; c < C; ++c) {
         for (int h_s = 0; h_s < P; ++h_s) {
             for (int w_s = 0; w_s < Q; ++w_s) {
@@ -75,7 +75,7 @@ Im2colFeatureMap * Im2colFeatureMap::fromCanonical(DirectFeatureMap * directFeat
     return im2_featureMap;
 }
 
-OutputMap *Im2colFeatureMap::conv(Im2colKernel * im2Kernel) {
+OutputMap *Im2colFeatureMap_OMP::conv(Im2colKernel * im2Kernel) {
     int K = im2Kernel->K;
     OutputMap * outputMap = new OutputMap(K, P, Q);
     for (int k = 0; k < K; ++k) {
@@ -91,7 +91,7 @@ OutputMap *Im2colFeatureMap::conv(Im2colKernel * im2Kernel) {
     return outputMap;
 }
 
-OutputMap *Im2colFeatureMap::conv(Im2colKernel *im2Kernel, AcceleratorFunction * accFunction) {
+OutputMap *Im2colFeatureMap_OMP::conv(Im2colKernel *im2Kernel, AcceleratorFunction * accFunction) {
     assert(C == im2Kernel->C);
     if (nullptr == accFunction) {
         return conv(im2Kernel);
@@ -101,7 +101,7 @@ OutputMap *Im2colFeatureMap::conv(Im2colKernel *im2Kernel, AcceleratorFunction *
     return conv(im2Kernel);
 }
 
-OutputMap *Im2colFeatureMap::conv_winograd_1D(Im2colKernel *im2Kernel, WinogradFunction_1D *func) {
+OutputMap *Im2colFeatureMap_OMP::conv_winograd_1D(Im2colKernel *im2Kernel, WinogradFunction_1D *func) {
     int K = im2Kernel->K;
     if (func->getR() != R) {
         std::cerr << "Will not use specified Winograd function as its size does not match your kernel. " <<
@@ -112,6 +112,7 @@ OutputMap *Im2colFeatureMap::conv_winograd_1D(Im2colKernel *im2Kernel, WinogradF
     OutputMap * outputMap = new OutputMap(K, P, Q);
     for (int k = 0; k < K; ++k) {
         int row;
+        #pragma omp parallel for
         for (row = 0; row < P * Q - (func->getM() - 1); row += func->getM()) {
             int outputRowIdx1 = row / P;
             int outputColIdx1 = row - P * outputRowIdx1;
