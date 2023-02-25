@@ -41,14 +41,13 @@ Im2col
 ![result.png](img/result.png)
 ### Steady Improvement is Witnessed when Using Winograd
 ![line_chart.png](img/line_chart.png)
-In Lab2 settings, my implementation is around 13% faster on average when using Winograd(2, 3),  
-which is not beyond expectation because, in fact, Winograd does not break much spatial locality.  
-As the size of a row is small under our settings, although it loads 2 rows at the same time, we  
-can infer that it still need not reload data from memory to cache. 
+In Lab2 settings, my implementation is around 13% faster on average when using Winograd(2, 3),  which is not beyond 
+expectation because, in fact, Winograd does not break much spatial locality. As the size of a row is small under our 
+settings, although it loads two rows at the same time, we can infer that it still needs not to reload data from memory 
+to cache.
 ### Parallelism
-Still we can use OpenMP to parallel convolution even if Winograd is used, yet this time we cannot  
-simply add the pragma in the innermost for loop because the innermost for loop will not loop for  
-many times when we use Winograd (e.g., loop for K * R * S / 3 times when using Winograd(2, 3)).  
-Here we'd better let one thread responsible for every two rows, which guarantees little parallel  
-overhead (and also better locality actually).
+Still, we can use OpenMP to parallel convolution even if Winograd is used. Yet, this time we cannot simply add the 
+pragma in the innermost for-loop because the innermost for-loop will not loop many times when we use Winograd (e.g., 
+loop for K * R * S / 3 times when using Winograd(2, 3)). Here we'd better let one thread be responsible for every two 
+rows, which guarantees little parallel overhead (and also better locality actually).
 ![parallel.png](img/parallel.png)
