@@ -17,10 +17,12 @@ Im2col
 │   ├── DirectFeatureMap.cpp
 │   ├── DirectFeatureMap.h
 │   ├── FeatureMap.h
-│   ├── Im2colFeatureMap.cpp         // Im2col feature map that allows convolution 
-│                                       with a accelerator function. 
-│                                       (****** HERE!!!!!! ******)
-│   └── Im2colFeatureMap.h
+│   ├── Im2colFeatureMap.cpp         // Im2col feature map that allows  
+│   │                                   convolution with a accelerator  
+│   │                                   function. (****** HERE!!!!!! ******)
+│   ├── Im2colFeatureMap.h
+│   ├── Im2colFeatureMap_OMP.cpp
+│   └── Im2colFeatureMap_OMP.h
 ├── kernel
 │   ├── DirectKernel.cpp
 │   ├── DirectKernel.h
