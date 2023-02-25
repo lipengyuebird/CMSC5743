@@ -16,12 +16,12 @@ public:
     [[nodiscard]] int getM() const;
     [[nodiscard]] int getR() const;
 
-    void operator()(long ** IM2_FM_Array, long * IM2_K_Array, int Row_Idx, int Col_Idx, long long int ** Output_Ptr_Array) override;
+    void operator()(long ** im2FeatureMapArray, long * im2KernelArray, int Row_Idx, int Col_Idx, long long int ** outputPtrArray) override;
 
 private:
     int m, r;
 
-    void winograd_2_3(long ** im2_featureMapArray, long * im2_kernelArray, int rowIdx, int colIdx, long long int ** outputPtrArray);
+    void winograd_2_3(long ** im2FeatureMapArray, long * im2KernelArray, int rowIdx, int colIdx, long long int ** outputPtrArray);
 };
 
 

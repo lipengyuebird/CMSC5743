@@ -19,34 +19,34 @@ WinogradFunction_1D::WinogradFunction_1D(int m, int r) {
     this->r = r;
 }
 
-void WinogradFunction_1D::operator()(long **im2_featureMapArray, long *im2_kernelArray, int rowIdx, int colIdx,
+void WinogradFunction_1D::operator()(long **im2FeatureMapArray, long *im2KernelArray, int rowIdx, int colIdx,
                                      long long int **outputPtrArray) {
     if (2 == getM()) {
         if (3 == getR()) {
-            winograd_2_3(im2_featureMapArray, im2_kernelArray, rowIdx, colIdx, outputPtrArray);
+            winograd_2_3(im2FeatureMapArray, im2KernelArray, rowIdx, colIdx, outputPtrArray);
             return;
         }
     }
 
 }
 
-void WinogradFunction_1D::winograd_2_3(long **im2_featureMapArray, long *im2_kernelArray, int rowIdx, int colIdx,
+void WinogradFunction_1D::winograd_2_3(long **im2FeatureMapArray, long *im2KernelArray, int rowIdx, int colIdx,
                                        long long int **outputPtrArray) {
 
     // Make sure WinogradFunction does not excel the feature map the kernel.
-    assert(im2_featureMapArray[rowIdx + 1][colIdx + 2]);
-    assert(im2_kernelArray[colIdx + 2]);
+    assert(im2FeatureMapArray[rowIdx + 1][colIdx + 2]);
+    assert(im2KernelArray[colIdx + 2]);
 
     // find the address of the part of feature map used in calculation
-    long * featureMapRow0 = & im2_featureMapArray[rowIdx][colIdx];
-    long * featureMapRow1 = & im2_featureMapArray[rowIdx + 1][colIdx];
+    long * featureMapRow0 = & im2FeatureMapArray[rowIdx][colIdx];
+    long * featureMapRow1 = & im2FeatureMapArray[rowIdx + 1][colIdx];
 
     // Make sure constraints of Winograd are met.
     assert(featureMapRow0[1] == featureMapRow1[0]);
     assert(featureMapRow0[2] == featureMapRow1[1]);
 
     // find the address of the part of kernel used in calculation.
-    long * Kernel = & im2_kernelArray[colIdx];
+    long * Kernel = & im2KernelArray[colIdx];
 
     long long M1 = (featureMapRow0[0] - featureMapRow0[2]) * Kernel[0];
     // Use doubled M2 and M3 in case they are odd numbers.
