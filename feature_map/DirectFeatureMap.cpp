@@ -25,7 +25,7 @@ DirectFeatureMap::~DirectFeatureMap() {
         }
         delete [] this->featureMapArray[c];
     }
-    delete this->featureMapArray;
+    delete [] this->featureMapArray;
 }
 
 void DirectFeatureMap::printArray() {

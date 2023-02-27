@@ -24,7 +24,7 @@ Im2colFeatureMap::~Im2colFeatureMap() {
     for (int c = 0; c < C; ++c) {
         delete [] this->featureMapArray[c];
     }
-    delete this->featureMapArray;
+    delete [] this->featureMapArray;
 }
 
 void Im2colFeatureMap::randInit() {

@@ -25,13 +25,13 @@ DirectKernel::~DirectKernel() {
     for (int k = 0; k < K; ++k) {
         for (int c = 0; c < C; ++c) {
             for (int r = 0; r < R; ++r) {
-                delete kernelArray[k][c][r];
+                delete [] kernelArray[k][c][r];
             }
-            delete kernelArray[k][c];
+            delete [] kernelArray[k][c];
         }
-        delete kernelArray[k];
+        delete [] kernelArray[k];
     }
-    delete kernelArray;
+    delete [] kernelArray;
 }
 
 void DirectKernel::printArray() {
