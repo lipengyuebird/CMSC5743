@@ -145,3 +145,10 @@ OutputMap *Im2colFeatureMap::conv_winograd_1D(Im2colKernel *im2Kernel, WinogradF
     }
     return outputMap;
 }
+
+Im2colFeatureMap * Im2colFeatureMap::readNpy(std::string &path, int R, int S) {
+    std::vector<unsigned long> shape;
+    std::vector<Scalar> data;
+    npy::LoadArrayFromNumpy(path, shape, )
+    return nullptr;
+}

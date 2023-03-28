@@ -11,12 +11,14 @@
 #include "../kernel/Im2colKernel.h"
 #include "../acc_function/AcceleratorFunction.h"
 #include "../acc_function/winograd/WinogradFunction_1D.h"
+#include <npy.hpp>
 
 class Im2colFeatureMap: public FeatureMap{
 public:
     Im2colFeatureMap(int C, int H, int W, int R, int S);
     ~Im2colFeatureMap();
     Im2colFeatureMap static * fromCanonical(DirectFeatureMap * directFeatureMap, int R, int S);
+    Im2colFeatureMap static * readNpy(std::string &path, int R, int S);
 
     void randInit();
     void printArray() override;
