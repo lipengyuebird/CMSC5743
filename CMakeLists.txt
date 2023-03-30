@@ -6,4 +6,4 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(${CMAKE_SOURCE_DIR}/include)
 
-add_executable(Im2col main.cpp kernel/DirectKernel.cpp feature_map/DirectFeatureMap.h feature_map/FeatureMap.h feature_map/Im2colFeatureMap.h kernel/Im2colKernel.cpp kernel/Im2colKernel.h output_map/OutputMap.cpp output_map/OutputMap.h util/GetTime.h acc_function/winograd/WinogradFunction.h acc_function/winograd/WinogradFunction_1D.h acc_function/winograd/WinogradFunction_1D.cpp acc_function/AcceleratorFunction.h include/npy.hpp)
+add_executable(Im2col main.cpp kernel/DirectKernel.cpp feature_map/DirectFeatureMap.h feature_map/FeatureMap.h feature_map/Im2colFeatureMap.h kernel/Im2colKernel.cpp kernel/Im2colKernel.h output_map/OutputMap.h util/GetTime.h acc_function/winograd/WinogradFunction.h acc_function/winograd/WinogradFunction_1D.h acc_function/winograd/WinogradFunction_1D.cpp acc_function/AcceleratorFunction.h include/npy.hpp feature_map/RegularSparseFeatureMap.h)

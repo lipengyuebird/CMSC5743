@@ -4,14 +4,15 @@
 #include "feature_map/Im2colFeatureMap.h"
 #include "util/GetTime.h"
 #include "acc_function/winograd/WinogradFunction_1D.h"
+#include "feature_map/RegularSparseFeatureMap.h"
 #include <npy.hpp>
 
 
 int main() {
 
-    DirectFeatureMap<float> * directFeatureMap  = DirectFeatureMap<float>::readNpy("/Users/perye/CLionProjects/CMSC5743/resources/matrix_f4.npy");
-    directFeatureMap->printArray();
-
+    DirectFeatureMap<double> * directFeatureMap  = DirectFeatureMap<double>::readNpy("/home/perye/CLionProjects/cmsc5724/Im2col/resources/pointcloud.npy");
+//    Im2colFeatureMap<double> * im2ColFeatureMap = Im2colFeatureMap<double>::fromCanonical(directFeatureMap, 3, 3);
+    RegularSparseFeatureMap<double> * sparseFeatureMap = RegularSparseFeatureMap<double>::fromCanonical(directFeatureMap, 3, 3);
 //    const int C = 3, H = 56, W = 56;
 //    const int K = 64, R = 3, S = 3;
 //

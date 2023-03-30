@@ -8,6 +8,7 @@
 
 #include <string>
 #include <npy.hpp>
+#include <iomanip>
 
 #include "FeatureMap.h"
 #include "../output_map/OutputMap.h"
@@ -25,7 +26,7 @@ public:
     void randInit();
     void printArray() override;
 
-    OutputMap * conv(DirectKernel * directKernel);
+    OutputMap<T> * conv(DirectKernel * directKernel);
 
     T *** featureMapArray;
 };
@@ -54,7 +55,7 @@ DirectFeatureMap<T>::~DirectFeatureMap() {
 
 template<typename T>
 void DirectFeatureMap<T>::printArray() {
-
+    std::cout << featureMapArray[0][0][0];
     for (int i = 0; i < C; ++i) {
         for (int j = 0; j < H; ++j) {
             for (int k = 0; k < W; ++k) {
@@ -79,11 +80,11 @@ void DirectFeatureMap<T>::randInit() {
 }
 
 template<typename T>
-OutputMap *DirectFeatureMap<T>::conv(DirectKernel * directKernel) {
+OutputMap<T> *DirectFeatureMap<T>::conv(DirectKernel * directKernel) {
     int K = directKernel->K;
     int P = H - directKernel->R + 1;
     int Q = W - directKernel->S + 1;
-    OutputMap * outputMap = new OutputMap(K, P, Q);
+    OutputMap * outputMap = new OutputMap<T>(K, P, Q);
     for (int k = 0; k < K; ++k) {
         for (int c = 0; c < C; ++c) {
             int n = c;
@@ -110,16 +111,19 @@ DirectFeatureMap<T> *DirectFeatureMap<T>::readNpy(std::string path) {
     npy::LoadArrayFromNumpy(path, shape, fortran_order, dataVector);
 
     T * data = dataVector.data();
-//    dataVector.clear();
+    dataVector.clear();
 
     auto * map = new DirectFeatureMap<T>(shape[0], shape[1], shape[2]);
     map->featureMapArray = new T ** [map->C];
     for (int c = 0; c < map->C; ++c) {
         map->featureMapArray[c] = new T * [map->H];
-        for (int j = 0; j < 64; ++j) {
-            map->featureMapArray[c][j] = &(data[map->H * map->W * c + map->W * j]);
+        for (int h = 0; h < map->H; ++h) {
+            map->featureMapArray[c][h] = new T[map->W];
+            std::copy(data + map->H * map->W * c + map->W * h, data + map->H * map->W * c + map->W * (h + 1), map->featureMapArray[c][h]);
+            std::cout << map->featureMapArray[c][h][1];
         }
     }
+    std::cout << map->featureMapArray[0][0][1];
     return map;
 }
 
