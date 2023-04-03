@@ -1,28 +1,21 @@
-# Im2col
+# Sparse Convolution
 
 ## Simple Usage
 See `main.cpp`.
 
 ## Files and Directories
 ```
-Im2col
 ├── acc_function
-│   ├── AcceleratorFunction.h        // The base class of accelertor functions.
+│   ├── AcceleratorFunction.h
 │   └── winograd
-│       ├── WinogradFunction_1D.cpp  // Winograd 1D. (****** HERE!!!!!! ******)
 │       ├── WinogradFunction_1D.h
-│       └── WinogradFunction.h       // The base classWinograd accelertor functions.
+│       └── WinogradFunction.h
 ├── CMakeLists.txt
 ├── feature_map
-│   ├── DirectFeatureMap.cpp
 │   ├── DirectFeatureMap.h
 │   ├── FeatureMap.h
-│   ├── Im2colFeatureMap.cpp         // Im2col feature map that allows  
-│   │                                   convolution with a accelerator  
-│   │                                   function. (****** HERE!!!!!! ******)
 │   ├── Im2colFeatureMap.h
-│   ├── Im2colFeatureMap_OMP.cpp
-│   └── Im2colFeatureMap_OMP.h
+│   └── RegularSparseFeatureMap.h  // Regular sparse feature map (***HERE!***)
 ├── kernel
 │   ├── DirectKernel.cpp
 │   ├── DirectKernel.h
@@ -31,23 +24,23 @@ Im2col
 │   └── Kernel.h
 ├── main.cpp
 ├── output_map
-│   ├── OutputMap.cpp
 │   └── OutputMap.h
+├── resources
+│   └── pointcloud.npy
 └── util
     └── GetTime.h
 
+
 ```
-## Analysis
-![result.png](img/result.png)
-### Steady Improvement is Witnessed when Using Winograd
-![line_chart.png](img/line_chart.png)
-In Lab2 settings, my implementation is around 13% faster on average when using Winograd(2, 3),  which is not beyond 
-expectation because, in fact, Winograd does not break much spatial locality. As the size of a row is small under our 
-settings, although it loads two rows at the same time, we can infer that it still needs not to reload data from memory 
-to cache.
-### Parallelism
-Still, we can use OpenMP to parallel convolution even if Winograd is used. Yet, this time we cannot simply add the 
-pragma in the innermost for-loop because the innermost for-loop will not loop many times when we use Winograd (e.g., 
-loop for K * R * S / 3 times when using Winograd(2, 3)). Here we'd better let one thread be responsible for every two 
-rows, which guarantees little parallel overhead (and also better locality actually).
-![parallel.png](img/parallel.png)
+## Result and Analysis
+* Output Channel: 64  
+![Screenshot from 2023-04-03 19-29-06.png](img/Screenshot%20from%202023-04-03%2019-29-06.png)
+* Output Channel: 128  
+![Screenshot from 2023-04-03 21-32-11.png](img/Screenshot%20from%202023-04-03%2021-32-11.png)
+* Output Channel: 256  
+![Screenshot from 2023-04-03 21-33-00.png](img/Screenshot%20from%202023-04-03%2021-33-00.png)
+* Output Channel: 512  
+![Screenshot from 2023-04-03 21-31-34.png](img/Screenshot%20from%202023-04-03%2021-31-34.png)  
+
+Inference time is linearly corresponded to the amount of output channel because for every output  
+channel the convolution operation repeats one more time.
