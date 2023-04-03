@@ -10,61 +10,55 @@
 
 int main() {
 
-    DirectFeatureMap<double> * directFeatureMap  = DirectFeatureMap<double>::readNpy("/Users/perye/CLionProjects/CMSC5743/resources/pointcloud.npy");
-//    Im2colFeatureMap<double> * im2ColFeatureMap = Im2colFeatureMap<double>::fromCanonical(directFeatureMap, 3, 3);
-    RegularSparseFeatureMap<double> * sparseFeatureMap = RegularSparseFeatureMap<double>::fromCanonical(directFeatureMap, 3, 3);
-    sparseFeatureMap->printArray();
-    //    const int C = 3, H = 56, W = 56;
-//    const int K = 64, R = 3, S = 3;
-//
-//    // Set to true to view inner output
-//    const bool SHOW_OUTPUT = false;
-//
-//    // Canonical feature map
-//    auto * directFeatureMap = new DirectFeatureMap(C, H, W);
-//    directFeatureMap->randInit();
-//    if (SHOW_OUTPUT) directFeatureMap->printArray();
-//
-//    // Im2col feature map
-//    auto * im2FeatureMap = Im2colFeatureMap::fromCanonical(directFeatureMap, R, S);
-//    if (SHOW_OUTPUT) im2FeatureMap->printArray();
-//
-//    // Im2col feature map (OpenMP applied)
-//    auto * im2FeatureMap_OMP = Im2colFeatureMap_OMP::fromCanonical(directFeatureMap, R, S);
-//    if (SHOW_OUTPUT) im2FeatureMap_OMP->printArray();
-//
-//
-//
-//    // Canonical kernel
-//    auto * directKernel = new DirectKernel(K, C, R, S);
-//    directKernel->randInit();
-//    if (SHOW_OUTPUT) directKernel->printArray();
-//
-//    // Im2col kernel
-//    auto * im2Kernel = Im2colKernel::fromCanonical(directKernel);
-//    if (SHOW_OUTPUT) im2Kernel->printArray();
-//
-//    double t0 = getTime();
-//    OutputMap * map1 = directFeatureMap->conv(directKernel);
-//    double t1 = getTime();
-//    OutputMap * map2 = im2FeatureMap->conv(im2Kernel);
-//    double t2 = getTime();
-//    OutputMap * map3 = im2FeatureMap->conv(im2Kernel, new WinogradFunction_1D(2, 3));
-//    double t3 = getTime();
-//    OutputMap * map4 = im2FeatureMap_OMP->conv(im2Kernel, new WinogradFunction_1D(2, 3));
-//    double t4 = getTime();
-//
-//
-//    if (SHOW_OUTPUT) {
-//        map1->print();
-//        map2->print();
-//        map3->print();
-//        map4->print();
-//    }
-//
-//    std::cout << "Direct conv: " << t1 - t0 << std::endl
-//    << "Im2col conv: " << t2 - t1 << std::endl
-//    << "Im2col conv with Winograd: " << t3 - t2 << std::endl
-//    << "Im2col conv with Winograd (OpenMP enabled): " << t4 - t3 << std::endl;
+    const int C = 64, W = 64, H = 64;
+    const int K = 256, R = 3, S = 3;
+
+    // Set to true to view inner output
+    const bool SHOW_OUTPUT = false;
+
+    // Canonical feature map
+    DirectFeatureMap<double_t> * directFeatureMap  = DirectFeatureMap<double_t>::readNpy("/home/perye/CLionProjects/cmsc5724/Im2col/resources/pointcloud.npy");
+//    DirectFeatureMap<double_t> * directFeatureMap  = new DirectFeatureMap<double>(C, H, W);
+    if (SHOW_OUTPUT) directFeatureMap->printArray();
+
+    // Im2col feature map
+    auto * im2FeatureMap = Im2colFeatureMap<double_t>::fromCanonical(directFeatureMap, R, S);
+    if (SHOW_OUTPUT) im2FeatureMap->printArray();
+
+    auto sparseFeatureMap = RegularSparseFeatureMap<double>::fromCanonical(directFeatureMap, 3, 3);
+    if (SHOW_OUTPUT) sparseFeatureMap->printArray();
+
+    // Canonical kernel
+    auto * directKernel = new DirectKernel(K, C, R, S);
+    directKernel->randInit();
+
+    if (SHOW_OUTPUT) directKernel->printArray();
+
+    // Im2col kernel
+    auto * im2Kernel = Im2colKernel::fromCanonical(directKernel);
+    if (SHOW_OUTPUT) im2Kernel->printArray();
+
+    double t0 = getTime();
+    auto map1 = directFeatureMap->conv(directKernel);
+    double t1 = getTime();
+    auto map2 = im2FeatureMap->conv(im2Kernel);
+    double t2 = getTime();
+    auto map3 = im2FeatureMap->conv(im2Kernel, new WinogradFunction_1D<double>(2, 3));
+    double t3 = getTime();
+    auto map4 = sparseFeatureMap->conv(directKernel);
+    double t4 = getTime();
+
+
+    if (SHOW_OUTPUT) {
+        map1->print();
+        map2->print();
+        map3->print();
+        map4->print();
+    }
+
+    std::cout << "Direct conv: " << t1 - t0 << std::endl
+    << "Im2col conv: " << t2 - t1 << std::endl
+    << "Im2col conv with Winograd: " << t3 - t2 << std::endl
+    << "Sparse conv: " << t4 - t3 << std::endl;
 
 }

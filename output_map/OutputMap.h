@@ -19,11 +19,11 @@ public:
 
 template<typename T>
 OutputMap<T>::OutputMap(int K, int P, int Q): K(K), P(P), Q(Q) {
-    this->outputArray = new long long ** [K];
+    this->outputArray = new T ** [K];
     for (int k = 0; k < K; ++k) {
-        this->outputArray[k] = new long long * [P];
+        this->outputArray[k] = new T * [P];
         for (int p = 0; p < P; ++p) {
-            this->outputArray[k][p] = new long long [Q];
+            this->outputArray[k][p] = new T [Q];
         }
     }
 }

@@ -8,6 +8,7 @@
 
 #include "../AcceleratorFunction.h"
 
+template<typename T>
 class WinogradFunction: public AcceleratorFunction {
 public:
     /**
@@ -18,7 +19,7 @@ public:
      * @param colIdx Starting column index.
      * @param outputPtrArray Pointer array of output values whose length may differs according to what Winograd kernel is used.
      */
-    virtual void operator()(long ** im2FmArray, long * im2KernelArray, int rowIdx, int colIdx, long long int ** outputPtrArray) = 0;
+    virtual void operator()(T ** im2FmArray, long * im2KernelArray, int rowIdx, int colIdx, T ** outputPtrArray) = 0;
 protected:
     WinogradFunction() = default;
     ~WinogradFunction() override = default;

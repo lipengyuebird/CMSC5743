@@ -30,17 +30,17 @@ public:
     OutputMap<T> * conv(Im2colKernel * im2Kernel, AcceleratorFunction * accFunction);
 
     int R, S, P, Q;
-    long ** featureMapArray;
+    T ** featureMapArray;
 private:
-    OutputMap<T> * conv_winograd_1D(Im2colKernel * im2Kernel, WinogradFunction_1D * func);
+    OutputMap<T> * conv_winograd_1D(Im2colKernel * im2Kernel, WinogradFunction_1D<T> * func);
 
 };
 
 template<typename T>
 Im2colFeatureMap<T>::Im2colFeatureMap(int C, int H, int W, int R, int S): FeatureMap(C, H, W), R(R), S(S), P(H - R + 1), Q(W - S + 1) {
-    this->featureMapArray = new long * [P * Q];
+    this->featureMapArray = new T * [P * Q];
     for (int c = 0; c < P * Q; ++c) {
-        this->featureMapArray[c] = new long [C * R * S];
+        this->featureMapArray[c] = new T [C * R * S];
     }
 }
 
@@ -126,14 +126,14 @@ OutputMap<T> *Im2colFeatureMap<T>::conv(Im2colKernel *im2Kernel, AcceleratorFunc
     assert(C == im2Kernel->C);
     if (nullptr == accFunction) {
         return conv(im2Kernel);
-    } else if (auto * func = dynamic_cast<WinogradFunction_1D*>(accFunction)) {
+    } else if (auto * func = dynamic_cast<WinogradFunction_1D<T>*>(accFunction)) {
         return conv_winograd_1D(im2Kernel, func);
     }
     return conv(im2Kernel);
 }
 
 template<typename T>
-OutputMap<T> *Im2colFeatureMap<T>::conv_winograd_1D(Im2colKernel *im2Kernel, WinogradFunction_1D *func) {
+OutputMap<T> *Im2colFeatureMap<T>::conv_winograd_1D(Im2colKernel *im2Kernel, WinogradFunction_1D<T> *func) {
     int K = im2Kernel->K;
     if (func->getR() != R) {
         std::cerr << "Will not use specified Winograd function as its size does not match your kernel. " <<
@@ -141,7 +141,7 @@ OutputMap<T> *Im2colFeatureMap<T>::conv_winograd_1D(Im2colKernel *im2Kernel, Win
                   "Kernel size: " << K << " * " << R << " * "  << S << ',' << std::endl;
         return conv(im2Kernel);
     }
-    auto * outputMap = new OutputMap(K, P, Q);
+    auto * outputMap = new OutputMap<T>(K, P, Q);
     for (int k = 0; k < K; ++k) {
         int row;
         for (row = 0; row < P * Q - (func->getM() - 1); row += func->getM()) {
@@ -152,7 +152,7 @@ OutputMap<T> *Im2colFeatureMap<T>::conv_winograd_1D(Im2colKernel *im2Kernel, Win
             int col;
 
             for (col = 0; col < C * R * S - (func->getR() - 1); col += func->getR()) {
-                long long * outputPtrArray[2] = {
+                T * outputPtrArray[2] = {
                         &(outputMap->outputArray[k][outputRowIdx1][outputColIdx1]),
                         &(outputMap->outputArray[k][outputRowIdx2][outputColIdx2])
                 };

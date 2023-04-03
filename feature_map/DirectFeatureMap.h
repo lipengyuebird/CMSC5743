@@ -26,7 +26,7 @@ public:
     void randInit();
     void printArray() override;
 
-    OutputMap<T> * conv(DirectKernel * directKernel);
+    virtual OutputMap<T> * conv(DirectKernel * directKernel);
 
     T *** featureMapArray;
 };
@@ -106,9 +106,9 @@ OutputMap<T> *DirectFeatureMap<T>::conv(DirectKernel * directKernel) {
 template<typename T>
 DirectFeatureMap<T> *DirectFeatureMap<T>::readNpy(std::string path) {
     std::vector<unsigned long> shape;
-    bool fortran_order;
+    bool _;
     std::vector<T> dataVector;
-    npy::LoadArrayFromNumpy(path, shape, fortran_order, dataVector);
+    npy::LoadArrayFromNumpy(path, shape, _, dataVector);
 
     T * data = dataVector.data();
     dataVector.clear();
@@ -120,10 +120,8 @@ DirectFeatureMap<T> *DirectFeatureMap<T>::readNpy(std::string path) {
         for (int h = 0; h < map->H; ++h) {
             map->featureMapArray[c][h] = new T[map->W];
             std::copy(data + map->H * map->W * c + map->W * h, data + map->H * map->W * c + map->W * (h + 1), map->featureMapArray[c][h]);
-            std::cout << map->featureMapArray[c][h][1];
         }
     }
-    std::cout << map->featureMapArray[0][0][1];
     return map;
 }
 

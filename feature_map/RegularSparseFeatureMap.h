@@ -12,7 +12,7 @@
 
 
 template<typename T>
-class RegularSparseFeatureMap: public FeatureMap {
+class RegularSparseFeatureMap: public DirectFeatureMap<T> {
 public:
     RegularSparseFeatureMap<T>(int C, int H, int W, int R, int S);
     virtual ~RegularSparseFeatureMap();
@@ -20,14 +20,13 @@ public:
 
     void printArray() override;
 
-    OutputMap<T> * conv(DirectKernel * directKernel);
-
+    OutputMap<T> * conv(DirectKernel * directKernel) override;
 
     typedef std::tuple<int, int> pair_t;
     typedef std::tuple<int, int, int> triple_t;
 
     struct rbk_value {
-        uint64_t in;
+        uint64_t in{};
         pair_t outIndex;
     };
 
@@ -39,12 +38,22 @@ private:
 
 template<typename T>
 OutputMap<T> *RegularSparseFeatureMap<T>::conv(DirectKernel *directKernel) {
-
-    return nullptr;
+    assert(directKernel->C == this->C);
+    auto outputMap = new OutputMap<T>(directKernel->K, this->P, this->Q);
+    for (int k = 0; k < directKernel->K; ++k) {
+        for (auto iter = rulebook.begin(); iter != rulebook.end(); ++iter) {
+            triple_t in = this->hashIn[iter->second.in];
+            outputMap->outputArray[k][std::get<0>(iter->second.outIndex)][std::get<1>(iter->second.outIndex)] +=
+                    directKernel->kernelArray[k][std::get<0>(in)][std::get<0>(iter->first)][std::get<1>(iter->first)] *
+                    this->featureMapArray[std::get<0>(in)][std::get<1>(in)][std::get<2>(in)];
+        }
+    }
+    return outputMap;
 }
 
 template<typename T>
 void RegularSparseFeatureMap<T>::printArray() {
+    std::cout << hashIn.size();
     for (triple_t in: hashIn) {
         std::cout << std::get<0>(in) << ' ' << std::get<1>(in) << ' ' << std::get<2>(in) << std::endl;
     }
@@ -60,6 +69,8 @@ template<typename T>
 RegularSparseFeatureMap<T> *RegularSparseFeatureMap<T>::fromCanonical(DirectFeatureMap<T> *featureMap, int R, int S) {
     auto * sparseFeatureMap =
             new RegularSparseFeatureMap<T>(featureMap->C, featureMap->H, featureMap->W, R, S);
+    // TODO: use shared_ptr to avoid array being deleted
+    sparseFeatureMap->featureMapArray = featureMap->featureMapArray;
 
     for (int h = 0; h < featureMap->H; ++h) {
         for (int w = 0; w < featureMap->W; ++w) {
@@ -85,16 +96,12 @@ RegularSparseFeatureMap<T> *RegularSparseFeatureMap<T>::fromCanonical(DirectFeat
 template<typename T>
 RegularSparseFeatureMap<T>::~RegularSparseFeatureMap() {
     this->hashIn.clear();
-    this->hashOut.clear();
     this->rulebook.clear();
 }
 
 template<typename T>
 RegularSparseFeatureMap<T>::RegularSparseFeatureMap(int C, int H, int W, int R, int S) :
-        FeatureMap(C, H, W), R(R), S(S), P(H - R + 1), Q(W - S + 1) {
-//    this->hashIn = new std::vector<pair_t>;
-//    this->hashOut = new std::vector<pair_t>;
-//    this->rulebook = new std::multimap<pair_t, rbk_value>;
+        DirectFeatureMap<T>(C, H, W), R(R), S(S), P(H - R + 1), Q(W - S + 1) {
 }
 
 
