@@ -84,7 +84,7 @@ OutputMap<T> *DirectFeatureMap<T>::conv(DirectKernel * directKernel) {
     int K = directKernel->K;
     int P = H - directKernel->R + 1;
     int Q = W - directKernel->S + 1;
-    OutputMap * outputMap = new OutputMap<T>(K, P, Q);
+    auto * outputMap = new OutputMap<T>(K, P, Q);
     for (int k = 0; k < K; ++k) {
         for (int c = 0; c < C; ++c) {
             int n = c;

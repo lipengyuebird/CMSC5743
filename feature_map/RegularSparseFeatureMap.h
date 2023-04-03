@@ -33,19 +33,27 @@ public:
 
 private:
     int R, S, P, Q;
-    std::vector<triple_t> hashIn;
-    std::vector<pair_t> hashOut;
+    std::vector<triple_t> hashIn; // (c, h, w)
     std::multimap<pair_t, rbk_value> rulebook;
 };
 
 template<typename T>
 OutputMap<T> *RegularSparseFeatureMap<T>::conv(DirectKernel *directKernel) {
+
     return nullptr;
 }
 
 template<typename T>
 void RegularSparseFeatureMap<T>::printArray() {
-
+    for (triple_t in: hashIn) {
+        std::cout << std::get<0>(in) << ' ' << std::get<1>(in) << ' ' << std::get<2>(in) << std::endl;
+    }
+    std::cout << std::endl;
+    for (auto iter = rulebook.begin(); iter != rulebook.end(); ++iter) {
+        std::cout << '(' << std::get<0>(iter->first) << ", " << std::get<1>(iter->first) << ") "
+                << iter->second.in << ' ' << std::get<0>(iter->second.outIndex)
+                        << ' ' << std::get<1>(iter->second.outIndex) << std::endl;
+    }
 }
 
 template<typename T>
@@ -58,12 +66,12 @@ RegularSparseFeatureMap<T> *RegularSparseFeatureMap<T>::fromCanonical(DirectFeat
             for (int c = 0; c < featureMap->C; ++c) {
                 if (featureMap->featureMapArray[c][h][w] != 0) {
                     sparseFeatureMap->hashIn.push_back(RegularSparseFeatureMap::triple_t (c, h, w));
-                    for (int r = std::max(0, R + h - featureMap->H); r < std::min(R, R - h); ++r) {
-                        for (int s = std::max(0, S + w - featureMap->W); s < std::max(S, S - w); ++s) {
+                    for (int r = std::max(0, R + h - featureMap->H); r < std::min(R, h + 1); ++r) {
+                        for (int s = std::max(0, S + w - featureMap->W); s < std::min(S, w + 1); ++s) {
                             sparseFeatureMap->rulebook.insert({RegularSparseFeatureMap::pair_t(r, s),
                                                                RegularSparseFeatureMap::rbk_value{
                                                                        sparseFeatureMap->hashIn.size() - 1,
-                                                                       RegularSparseFeatureMap::pair_t(w + r, h + s)}});
+                                                                       RegularSparseFeatureMap::pair_t(h - r, w - s)}});
                         }
                     }
                 }
