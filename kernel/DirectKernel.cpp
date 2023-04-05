@@ -55,7 +55,7 @@ void DirectKernel::randInit() {
         for (int c = 0; c < C; ++c) {
             for (int r = 0; r < R; ++r) {
                 for (int s = 0; s < S; ++s) {
-                    kernelArray[k][c][r][s] = rand() >> 10;
+                    kernelArray[k][c][r][s] = rand() >> 16;
                 }
             }
         }

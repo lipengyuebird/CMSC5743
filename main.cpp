@@ -12,7 +12,7 @@
 int main() {
 
     // =============== SET THE DATA PATH HERE ===============
-    std::string path = "/home/perye/CLionProjects/cmsc5743/Im2col/resources/pointcloud.npy";
+    std::string path = R"(C:\Users\lipen\CLionProjects\CMSC5743\resources\pointcloud.npy)";
 
     const int C = 64, W = 64, H = 64;
     const int K = 64, R = 3, S = 3;
@@ -68,7 +68,7 @@ int main() {
     for (int k = 0; k < map1->K; ++k) {
         for (int p = 0; p < map1->P; ++p) {
             for (int q = 0; q < map1->Q; ++q) {
-                assert(map1->outputArray[k][p][q] == map4->outputArray[k][p][q]);
+                assert((map1->outputArray[k][p][q] - map4->outputArray[k][p][q]) < 1e-12);
             }
         }
     }

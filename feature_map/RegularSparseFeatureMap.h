@@ -81,7 +81,7 @@ RegularSparseFeatureMap<T> *RegularSparseFeatureMap<T>::fromCanonical(DirectFeat
                         for (int s = std::max(0, S + w - featureMap->W); s < std::min(S, w + 1); ++s) {
                             sparseFeatureMap->rulebook.insert({RegularSparseFeatureMap::pair_t(r, s),
                                                                RegularSparseFeatureMap::rbk_value{
-                                                                       sparseFeatureMap->hashIn.size() - 1,
+                                                                       sparseFeatureMap->hashIn.size(),
                                                                        RegularSparseFeatureMap::pair_t(h - r, w - s)}});
                         }
                     }
