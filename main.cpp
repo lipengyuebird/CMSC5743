@@ -11,8 +11,8 @@
 
 int main() {
 
-    // =============== SET THE DATA PATH HERE ===============
-    std::string path = R"(C:\Users\lipen\CLionProjects\CMSC5743\resources\pointcloud.npy)";
+    // =============== SPECIFY THE DATA PATH HERE ===============
+    std::string path = R"(/home/perye/CLionProjects/cmsc5724/Im2col/resources/pointcloud.npy)";
 
     const int C = 64, W = 64, H = 64;
     const int K = 64, R = 3, S = 3;
@@ -68,9 +68,16 @@ int main() {
     for (int k = 0; k < map1->K; ++k) {
         for (int p = 0; p < map1->P; ++p) {
             for (int q = 0; q < map1->Q; ++q) {
-                assert((map1->outputArray[k][p][q] - map4->outputArray[k][p][q]) < 1e-12);
+                if (map1->outputArray[k][p][q] - map4->outputArray[k][p][q] > 1e-12) {
+                    std::cout << map1->outputArray[k][p][q] << " " << map4->outputArray[k][p][q] << std::endl;
+                }
+                assert(map1->outputArray[k][p][q] - map4->outputArray[k][p][q] < 1e-12);
             }
         }
     }
+
+    delete map1; delete map2; delete map3; delete map4;
+
+
 
 }
