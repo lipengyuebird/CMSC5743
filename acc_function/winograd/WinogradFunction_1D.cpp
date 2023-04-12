@@ -34,8 +34,8 @@ void WinogradFunction_1D::winograd_2_3(long **im2FeatureMapArray, long *im2Kerne
                                        long long int **outputPtrArray) {
 
     // Make sure WinogradFunction does not excel the feature map the kernel.
-    assert(im2FeatureMapArray[rowIdx + 1][colIdx + 2]);
-    assert(im2KernelArray[colIdx + 2]);
+    assert(&(im2FeatureMapArray[rowIdx + 1][colIdx + 2]) != nullptr);
+    assert(im2KernelArray[colIdx + 2] || im2KernelArray[colIdx + 2] == 0);
 
     // find the address of the part of feature map used in calculation
     long * featureMapRow0 = & im2FeatureMapArray[rowIdx][colIdx];
