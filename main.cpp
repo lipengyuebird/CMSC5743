@@ -28,7 +28,7 @@ int main() {
     auto * im2FeatureMap = Im2colFeatureMap<double_t>::fromCanonical(directFeatureMap, R, S);
     if (SHOW_OUTPUT) im2FeatureMap->printArray();
 
-    auto sparseFeatureMap = RegularSparseFeatureMap<double>::fromCanonical(directFeatureMap, 3, 3);
+    auto sparseFeatureMap = RegularSparseFeatureMap<double_t>::fromCanonical(directFeatureMap, R, S);
     if (SHOW_OUTPUT) sparseFeatureMap->printArray();
 
     // Canonical kernel
@@ -75,9 +75,5 @@ int main() {
             }
         }
     }
-
-    delete map1; delete map2; delete map3; delete map4;
-
-
 
 }
