@@ -1,5 +1,6 @@
 # Sparse Convolution
-
+⚠️ **The repository is just for reference. Do not copy any code directly because it is far from perfection and I believe you are able to provide a better implementation. Meanwhile, TAs can easily recognize plagiarism since they are acquainted with both me and my code.**  
+You can check different branches for different labs. 
 ## Simple Usage
 See `main.cpp`.
 
